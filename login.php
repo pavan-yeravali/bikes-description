@@ -16,23 +16,24 @@ if ($conn->connect_error) {
 // Check if the form is submitted using POST method
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve username and password from the form
-    $name = $_POST["name"];
-    $email = $_POST["email"];
-    $contact_num = $_POST["contact_num"];
-    $review = $_POST["review"];
+    $username = $_POST["username"];
+    $password = $_POST["password"];
 
-    // Prepare Sql to insert data into the database
-    $sql = "INSERT INTO customers (name, email, contact_num, review) VALUES('$name','$email','$contact_num','$review')";
+    // Prepare SQL query to select user from the admin table
+    $sql = "SELECT * FROM login WHERE username='$username' AND password='$password'";
+    $result = $conn->query($sql);
 
     // Check if any row is returned (user found)
-    if ($conn->query($sql)===TRUE) {
-        // OUTPUT javascript alert after successful insertion
-        echo"<script>alert('New record created successfully');</script>";
+    if ($result->num_rows > 0) {
+        // User authenticated successfully
+        // Redirect to admin-panel.php
+        header("Location: index.html");
+        // Exit to prevent further execution
+        exit;
     } else {
-        echo "Error: " .$sql .$conn->error;
+        // User not found or invalid credentials
+        echo "<script>alert('Invalid username or password');</script>";
     }
-}else{
-    echo "Error: Form submission method not allowed";
 }
 
 // Close connection
